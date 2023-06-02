@@ -23,7 +23,7 @@
                --restart unless-stopped \
                -e TELEGRAM_TOKEN="telegram bot token" \
                -e MBlog_Backend_URL="mblog后端url" \
-               -e MBlog_Token="mblog开发者token" \
+               -e MBlog_TOKEN="mblog开发者token" \
                -e Visibility="mblog发布可见权限，默认仅自己可见，可不配置" \
                -e PROXY_URL="墙内机器运行需要配置telegram代理，墙外无需配置" \
     cooolr/mblog-telegram-bot:latest
@@ -56,7 +56,7 @@
 
     - mblog开发者token
   
-       `MBlog_Token = "xxxxxxxxxxxxxxxxxxxxxxxxx"`
+       `MBlog_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxx"`
 
     - mblog发布可见权限，默认`PRIVATE`仅自己可见 (`PUBLIC`所有人可见、`PROTECT`登录用户可见)
 
