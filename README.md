@@ -20,6 +20,7 @@
     ``` bash
     docker run -d \
                --name mblog-telegram-bot \
+               --restart unless-stopped \
                -e TELEGRAM_TOKEN="telegram bot token" \
                -e MBlog_Backend_URL="mblog后端url" \
                -e MBlog_Token="mblog开发者token" \
