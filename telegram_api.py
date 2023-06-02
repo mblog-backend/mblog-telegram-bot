@@ -10,6 +10,12 @@ from config import TELEGRAM_TOKEN, proxies
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 memo_timestamp_dict = {}
 
+BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
+
+def send_message(chat_id, text):
+    data = {"chat_id": chat_id, "text": text}
+    requests.post(f"{BASE_URL}/sendMessage", data=data, proxies=proxies, verify=False)
+
 def get_file_url(file_id):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getFile?file_id={file_id}"
     r = requests.get(url, proxies=proxies)
