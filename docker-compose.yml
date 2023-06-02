@@ -5,8 +5,8 @@ services:
     container_name: mblog-telegram-bot
     restart: unless-stopped
     environment:
-      TELEGRAM_TOKEN="telegram bot token"
-      MBlog_Backend_URL="mblog后端url"
-      MBlog_Token="mblog开发者token"
-      Visibility="mblog发布可见权限，默认仅自己可见，可不配置"
-      PROXY_URL="墙内机器运行需要配置telegram代理，墙外无需配置"
+      TELEGRAM_TOKEN: "telegram bot token"
+      MBlog_Backend_URL: "mblog后端url"
+      MBlog_Token: "mblog开发者token"
+      Visibility: "mblog发布可见权限，默认仅自己可见，可不配置"
+      PROXY_URL: "墙内机器运行需要配置telegram代理，墙外无需配置"
