@@ -5,9 +5,9 @@ import urllib3
 urllib3.disable_warnings()
 import requests
 from uuid import uuid1
-from config import MBlog_Backend_URL, MBlog_Token, Visibility, proxies
+from config import MBlog_Backend_URL, MBlog_TOKEN, Visibility, proxies
 
-headers = {"token": MBlog_Token}
+headers = {"token": MBlog_TOKEN}
 base_url = MBlog_Backend_URL + "/api"
 
 def url_for(endpoint):
