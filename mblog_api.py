@@ -22,16 +22,15 @@ if not tables:
 base_url = MBlog_Backend_URL + "/api"
 
 def get_headers(chat_id):
-    cursor.execute(f"select mblog_token from tg_token where telegram_id='{chat_id}'")
-    mblog_token = cursor.fetchone()
-    if mblog_token:
-        headers = {"token": mblog_token[0]}
+    cursor.execute(f"select mblog_backend,mblog_token from tg_token where telegram_id='{chat_id}'")
+    result = cursor.fetchone()
+    if result:
+        mblog_backend, mblog_token = result
+        headers = {"token": mblog_token}
     else:
+        mblog_backend = ""
         headers = {}
-    return headers
-
-def url_for(endpoint):
-    return f"{base_url}/{endpoint}"
+    return mblog_backend, headers
 
 def download(url):
     r = requests.get(url, proxies=proxies)
@@ -40,61 +39,63 @@ def download(url):
         f.write(r.content)
     return filename
 
-def handle_file(file_url, headers={}):
+def handle_file(file_url, mblog_backend="", headers={}):
     file_list = []
     if file_url:
         try:
             filename = download(file_url)
-            public_id = upload(filename, headers)
+            public_id = upload(filename, mblog_backend, headers)
             file_list.append(public_id)
             os.remove(filename)
         except Exception as e:
             print(e)
     return file_list
 
-def get_memo(memo_id, headers={}):
-    url = url_for(f"memo/{memo_id}")
+def get_memo(memo_id, mblog_backend, headers={}):
+    url = f"{mblog_backend}/memo/{memo_id}")
     r = requests.post(url, headers=headers, proxies=proxies, verify=False)
     data = r.json()["data"]
     publicIds = [i["publicId"] for i in data["resources"]]
     return {"visibility": data["visibility"], "publicIds": publicIds, "id": memo_id, 
             "content": data["content"], "priority": 0, "enableComment": data["enableComment"]}
 
-def post_memo(content, file_list=[], headers={}):
-    r = requests.post(url_for("memo/save"), headers=headers, 
+def post_memo(content, file_list=[], mblog_backend, headers={}):
+    r = requests.post(f"{mblog_backend}/memo/save", headers=headers, 
                       json={"content":content, "visibility":Visibility, "publicIds":file_list}, 
                       proxies=proxies, verify=False)
     return r.json()["data"]
 
 def update_memo(memo_id, file_url="", chat_id=""):
     if chat_id:
-        headers = get_headers(chat_id)
+        mblog_backend, headers = get_headers(chat_id)
     else:
+        mblog_backend = MBlog_Backend_URL
         headers = {"token": MBlog_TOKEN}
     if not headers:
         send_message(chat_id, "账号未绑定，请输入/start进行绑定。")
         return
-    memo = get_memo(memo_id, headers)
-    file_list = handle_file(file_url, headers)
+    memo = get_memo(memo_id, mblog_backend, headers)
+    file_list = handle_file(file_url, mblog_backend, headers)
     if file_list:
         memo["publicIds"].extend(file_list)
-        r = requests.post(url_for("memo/update"), headers=headers, json=memo, proxies=proxies, verify=False)
+        r = requests.post(f"{mblog_backend}/memo/update"), headers=headers, json=memo, proxies=proxies, verify=False)
 
-def upload(file_path, headers={}):
+def upload(file_path, mblog_backend="", headers={}):
     with open(file_path, "rb") as f:
-        r = requests.post(url_for("resource/upload"), headers=headers, files={"files": f}, proxies=proxies, verify=False)
+        r = requests.post(f"{mblog_backend}/resource/upload", headers=headers, files={"files": f}, proxies=proxies, verify=False)
     return r.json()["data"][0]["publicId"]
 
 def insert(text, file_url="", chat_id=""):
-    if chat_id:
-        headers = get_headers(chat_id)
+   if chat_id:
+        mblog_backend, headers = get_headers(chat_id)
     else:
+        mblog_backend = MBlog_Backend_URL
         headers = {"token": MBlog_TOKEN}
     if not headers:
         send_message(chat_id, "账号未绑定，请输入/start进行绑定。")
         return
-    file_list = handle_file(file_url, headers)
-    memo_id = post_memo(text, file_list, headers)
+    file_list = handle_file(file_url, mblog_backend, headers)
+    memo_id = post_memo(text, file_list, mblog_backend, headers)
     return memo_id
 
 if __name__ == "__main__":
