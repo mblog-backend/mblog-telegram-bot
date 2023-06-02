@@ -12,7 +12,7 @@ cursor = db.cursor()
 cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
 tables = cursor.fetchall()
 if not tables:
-    cursor.execute("create table tg_token(int auto_increment primary key,telegram_id varchar(32), mblog_token varchar(512), create_time timestamp default CURRENT_TIMESTAMP)")
+    cursor.execute("create table tg_token(int auto_increment primary key,chat_id varchar(32), mblog_backend varchar(128), mblog_token varchar(512), create_time timestamp default CURRENT_TIMESTAMP)")
     db.commit()
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
@@ -23,10 +23,11 @@ def handle_updates(updates):
         chat_id = message["chat"]["id"]
         text = message.get("text")
         if MultiUSE == "True" and text == "/start":
-            send_message(chat_id, "欢迎使用MBlog BOT，请输入你的MBlog开发者token绑定账号，请注意，以以下格式输入: \n`mblog-token=你的token`")
-        elif MultiUSE == "True" and text[:12] == "mblog-token=":
-            mblog_token = text.split("=")[-1]
-            cursor.execute(f"insert into tg_token(telegram_id, mblog_token) values('{chat_id}', '{mblog_token}')")
+            send_message(chat_id, "欢迎使用MBlog BOT，请输入你的MBlog后端url和开发者token绑定账号，请注意，以以下格式输入: \n`backend=你的后端url,token=你的token`")
+        elif MultiUSE == "True" and "mblog-backend=" in text and "mblog-token=" in text:
+            mblog_backend = text.split(",")[0].split("=")[-1]
+            mblog_token = text.split(",")[-1].split("=")[-1]
+            cursor.execute(f"insert into tg_token(chat_id, mblog_backend, mblog_token) values('{chat_id}', '{mblog_backend}', '{mblog_token}')")
             db.commit()
             send_message(chat_id, "恭喜！绑定成功，接下来您发送的消息都会同步到您的MBlog。")
         elif MultiUSE == "True":
