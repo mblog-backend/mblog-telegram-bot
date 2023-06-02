@@ -29,6 +29,13 @@
     cooolr/mblog-telegram-bot:latest
     ```
 
+## Docker-Compose部署
+
+1. 修改docker-compose.yml配置中的environment
+2. 更新: `docker-compose pull`
+3. 启动: `docker-compose up -d`
+4. 关闭: `docker-compose down`
+
 ## 常规部署
 
 1. 安装依赖
