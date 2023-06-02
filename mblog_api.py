@@ -96,7 +96,7 @@ def insert(text, file_url="", chat_id=""):
         return
     file_list = handle_file(file_url, mblog_backend, headers)
     memo_id = post_memo(text, file_list, mblog_backend, headers)
-    return memo_id
+    return mblog_backend,memo_id
 
 if __name__ == "__main__":
     public_id = upload("D:/test.png")
