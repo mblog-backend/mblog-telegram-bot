@@ -1,6 +1,11 @@
 # mblog-telegram-bot
 这是一个简单的程序，可以将发送给 telegram bot 的消息同步到mblog。
 
+## 特性
+
+1. 支持图文混发，支持多图；
+2. 支持telegram格式链接；
+
 ## 准备工作
 
 1. 创建一个 [telegram bot](https://t.me/botfather) 并获取token。
