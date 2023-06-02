@@ -53,6 +53,8 @@ def process_telegram_message(message, chat_id=""):
     if memo_timestamp_dict.get(message["date"]):
         update_memo(memo_timestamp_dict[message["date"]], file_url, chat_id)
     else:
-        memo_id = insert(text, file_url, chat_id)
+        mblog_backend, memo_id = insert(text, file_url, chat_id)
         if memo_id:
             memo_timestamp_dict[message["date"]] = memo_id
+            chat_id = message["chat"]["id"]
+            send_message(chat_id, f"同步成功，memo链接: {mblog_backend}/#/memo/{memo_id}")
