@@ -15,6 +15,9 @@ Visibility = "PRIVATE"
 # 代理
 PROXY_URL = ""
 
+# 多用户使用
+MultiUSE = "False"
+
 # 从环境变量获取
 env = os.environ
 if env.get("TELEGRAM_TOKEN"):
@@ -27,5 +30,7 @@ if env.get("MBlog_TOKEN"):
     MBlog_TOKEN = env.get("MBlog_TOKEN")
 if env.get("Visibility"):
     Visibility = env.get("Visibility")
-
+if env.get("MultiUSE"):
+    MultiUSE = env.get("MultiUSE")
+ 
 proxies = {"http": PROXY_URL, "https": PROXY_URL}
