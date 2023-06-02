@@ -31,7 +31,7 @@ def process_link_text(message):
             text = text[:offset] + markdown_link + text[offset+length:]
     return text
 
-def process_telegram_message(message):
+def process_telegram_message(message, chat_id=""):
     global memo_timestamp_dict
     print(message)
     memo_timestamp_dict = {k: v for k, v in memo_timestamp_dict.items() if time.time() - k <= 300}
@@ -45,8 +45,8 @@ def process_telegram_message(message):
             break
 
     if memo_timestamp_dict.get(message["date"]):
-        update_memo(memo_timestamp_dict[message["date"]], file_url)
+        update_memo(memo_timestamp_dict[message["date"]], file_url, chat_id)
     else:
-        memo_id = insert(text, file_url)
+        memo_id = insert(text, file_url, chat_id)
         if memo_id:
             memo_timestamp_dict[message["date"]] = memo_id
