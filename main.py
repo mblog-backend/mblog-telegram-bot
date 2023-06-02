@@ -4,7 +4,7 @@ import requests
 import sqlite3
 import time
 from config import TELEGRAM_TOKEN, MultiUSE, proxies
-from telegram_api import process_telegram_message
+from telegram_api import send_message, process_telegram_message
 
 # 初始化sqlite3数据库
 db = sqlite3.connect("data.db")
@@ -16,10 +16,6 @@ if not tables:
     db.commit()
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
-
-def send_message(chat_id, text):
-    data = {"chat_id": chat_id, "text": text}
-    requests.post(f"{BASE_URL}/sendMessage", data=data, proxies=proxies, verify=False)
 
 def handle_updates(updates):
     for update in updates:
