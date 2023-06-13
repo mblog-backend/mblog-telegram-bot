@@ -1,6 +1,7 @@
 import os
 
 # Telegram configuration
+#TELEGRAM_TOKEN = "6066281147:AAGGG9_kRySSuPYVLA5X1Q93Jv4SVYwitxM"
 TELEGRAM_TOKEN = ""
 
 # mblog backend url
@@ -16,7 +17,7 @@ Visibility = "PRIVATE"
 PROXY_URL = ""
 
 # 多用户使用
-MultiUSE = "False"
+MultiUSE = ""
 
 # 从环境变量获取
 env = os.environ
