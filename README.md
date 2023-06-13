@@ -34,10 +34,14 @@
     cooolr/mblog-telegram-bot:latest
     ```
 
-3. 多用户使用
+3. 多用户模式(telegram机器人对话页面绑定token)
     ```
-    # 加入MultiUSE参数并设置为"True"
-    MultiUSE = "True"
+    docker run -d \
+               --name mblog-telegram-bot \
+               --restart unless-stopped \
+               -e MultiUSE="True" \
+               -e PROXY_URL="墙内机器运行需要配置telegram代理，墙外无需配置" \
+    cooolr/mblog-telegram-bot:latest
     ```
 
 ## Docker-Compose部署
