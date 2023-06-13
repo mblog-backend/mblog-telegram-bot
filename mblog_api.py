@@ -7,6 +7,7 @@ import sqlite3
 import requests
 from uuid import uuid1
 from config import TELEGRAM_TOKEN, MBlog_Backend_URL, MBlog_TOKEN, Visibility, proxies
+from my_logger import logger, log
 
 # 初始化sqlite3数据库
 db = sqlite3.connect("data.db")
@@ -20,11 +21,13 @@ if not tables:
 
 base_url = MBlog_Backend_URL + "/api"
 
+@log
 def send_message(chat_id, text):
     BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
     data = {"chat_id": chat_id, "text": text}
     requests.post(f"{BASE_URL}/sendMessage", data=data, proxies=proxies, verify=False)
 
+@log
 def get_headers(chat_id):
     cursor.execute(f"select mblog_backend,mblog_token,visit from tg_token where chat_id='{chat_id}'")
     result = cursor.fetchone()
@@ -37,6 +40,7 @@ def get_headers(chat_id):
         visit = ""
     return mblog_backend, headers, visit
 
+@log
 def download(url):
     r = requests.get(url, proxies=proxies)
     filename = uuid1().hex + "." + url.split(".")[-1]
@@ -44,6 +48,7 @@ def download(url):
         f.write(r.content)
     return filename
 
+@log
 def handle_file(file_url, mblog_backend="", headers={}):
     file_list = []
     if file_url:
@@ -56,6 +61,7 @@ def handle_file(file_url, mblog_backend="", headers={}):
             print(e)
     return file_list
 
+@log
 def get_memo(memo_id, mblog_backend="", headers={}):
     url = f"{mblog_backend}/api/memo/{memo_id}"
     r = requests.post(url, headers=headers, proxies=proxies, verify=False)
@@ -64,13 +70,17 @@ def get_memo(memo_id, mblog_backend="", headers={}):
     return {"visibility": data["visibility"], "publicIds": publicIds, "id": memo_id, 
             "content": data["content"], "priority": 0, "enableComment": data["enableComment"]}
 
+@log
 def post_memo(content, file_list=[], mblog_backend="", headers={}, visit=""):
     url = f"{mblog_backend}/api/memo/save"
+    logger.info(f"post_memo url: {url}")
     r = requests.post(url, headers=headers, 
                       json={"content":content, "visibility": visit, "publicIds":file_list}, 
                       proxies=proxies, verify=False)
+    logger.info(f"post_memo result: {r.text}")
     return r.json()["data"]
 
+@log
 def update_memo(memo_id, file_url="", chat_id=""):
     if chat_id:
         mblog_backend, headers = get_headers(chat_id)
@@ -86,11 +96,13 @@ def update_memo(memo_id, file_url="", chat_id=""):
         memo["publicIds"].extend(file_list)
         r = requests.post(f"{mblog_backend}/api/memo/update", headers=headers, json=memo, proxies=proxies, verify=False)
 
+@log
 def upload(file_path, mblog_backend="", headers={}):
     with open(file_path, "rb") as f:
         r = requests.post(f"{mblog_backend}/api/resource/upload", headers=headers, files={"files": f}, proxies=proxies, verify=False)
     return r.json()["data"][0]["publicId"]
 
+@log
 def insert(text, file_url="", chat_id=""):
     if chat_id:
         mblog_backend, headers, visit = get_headers(chat_id)
@@ -106,5 +118,4 @@ def insert(text, file_url="", chat_id=""):
     return mblog_backend,memo_id
 
 if __name__ == "__main__":
-    public_id = upload("D:/test.png")
-    post_memo("测试", [public_id])
+    post_memo("测试", mblog_backend=MBlog_Backend_URL)

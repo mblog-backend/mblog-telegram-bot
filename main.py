@@ -3,8 +3,9 @@ urllib3.disable_warnings()
 import requests
 import sqlite3
 import time
-from config import TELEGRAM_TOKEN, MultiUSE, proxies
+from config import TELEGRAM_TOKEN, MultiUSE, proxies, MBlog_TOKEN, MBlog_Backend_URL
 from telegram_api import process_telegram_message
+from my_logger import logger, log
 
 # 初始化sqlite3数据库
 db = sqlite3.connect("data.db")
@@ -18,10 +19,12 @@ if not tables:
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
+@log
 def send_message(chat_id, text):
     data = {"chat_id": chat_id, "text": text}
     requests.post(f"{BASE_URL}/sendMessage", data=data, proxies=proxies, verify=False)
 
+@log
 def test_connect(mblog_backend, mblog_token):
     url = f"{mblog_backend}/api/user/current"
     headers = {"token": mblog_token}
@@ -33,6 +36,7 @@ def test_connect(mblog_backend, mblog_token):
         if r.status_code == 200:
             return True
 
+@log
 def handle_updates(updates):
     for update in updates:
         message = update.get("message", {})
@@ -50,10 +54,16 @@ def handle_updates(updates):
                 send_message(chat_id, "绑定失败，请检查后端url或开发者token。")
         elif MultiUSE == "True":
             process_telegram_message(message, chat_id)
+        elif  MultiUSE != "True" and text == "/start":
+            if test_connect(MBlog_Backend_URL, MBlog_TOKEN):
+                send_message(chat_id, "恭喜！绑定成功，接下来您发送的消息都会同步到您的MBlog。")
+            else:
+                send_message(chat_id, "绑定失败，请检查后端url或开发者token。")
         else:
             process_telegram_message(message)
             
 
+@log
 def get_updates(last_update_id=None):
     params = {"timeout": 100}
     if last_update_id is not None:
@@ -61,6 +71,7 @@ def get_updates(last_update_id=None):
     response = requests.get(f"{BASE_URL}/getUpdates", params=params, proxies=proxies, verify=False)
     return response.json().get("result", [])
 
+@log
 def main():
     last_update_id = None
     while True:
@@ -69,7 +80,7 @@ def main():
             try:
                 handle_updates(updates)
             except Exception as e:
-                print(e)
+                logger.error(e)
             last_update_id = updates[-1]["update_id"]
         time.sleep(10)
 

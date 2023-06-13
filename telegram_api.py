@@ -6,22 +6,26 @@ import requests
 from uuid import uuid1
 from mblog_api import insert, update_memo
 from config import TELEGRAM_TOKEN, proxies
+from my_logger import log
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 memo_timestamp_dict = {}
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
+@log
 def send_message(chat_id, text):
     data = {"chat_id": chat_id, "text": text}
     requests.post(f"{BASE_URL}/sendMessage", data=data, proxies=proxies, verify=False)
 
+@log
 def get_file_url(file_id):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/getFile?file_id={file_id}"
     r = requests.get(url, proxies=proxies)
     file_path = r.json()["result"]["file_path"]
     return f"https://api.telegram.org/file/bot{TELEGRAM_TOKEN}/{file_path}"
 
+@log
 def process_link_text(message):
     text = message.get('text', '') or message.get('caption', '')
     entities = message.get('entities', []) or message.get("caption_entities", [])
@@ -37,6 +41,7 @@ def process_link_text(message):
             text = text[:offset] + markdown_link + text[offset+length:]
     return text
 
+@log
 def process_telegram_message(message, chat_id=""):
     global memo_timestamp_dict
     print(message)
@@ -54,7 +59,6 @@ def process_telegram_message(message, chat_id=""):
         update_memo(memo_timestamp_dict[message["date"]], file_url, chat_id)
     else:
         mblog_backend, memo_id = insert(text, file_url, chat_id)
-        if memo_id:
-            memo_timestamp_dict[message["date"]] = memo_id
-            chat_id = message["chat"]["id"]
-            send_message(chat_id, f"同步成功，memo链接: {mblog_backend}/#/memo/{memo_id}")
+        memo_timestamp_dict[message["date"]] = memo_id
+        chat_id = message["chat"]["id"]
+        send_message(chat_id, f"同步成功，memo链接: {mblog_backend}/#/memo/{memo_id}")
