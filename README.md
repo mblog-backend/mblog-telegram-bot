@@ -34,6 +34,12 @@
     cooolr/mblog-telegram-bot:latest
     ```
 
+3. 多用户使用
+    ```
+    # 加入MultiUSE参数并设置为"True"
+    MultiUSE = "True"
+    ```
+
 ## Docker-Compose部署
 
 1. 修改docker-compose.yml配置中的environment
