@@ -1,7 +1,6 @@
 import os
 
 # Telegram configuration
-#TELEGRAM_TOKEN = "6066281147:AAGGG9_kRySSuPYVLA5X1Q93Jv4SVYwitxM"
 TELEGRAM_TOKEN = ""
 
 # mblog backend url
