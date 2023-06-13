@@ -9,6 +9,7 @@ COPY main.py $APP_HOME/
 COPY mblog_api.py $APP_HOME/
 COPY requirements.txt $APP_HOME/
 COPY telegram_api.py $APP_HOME/
+COPY my_logger.py $APP_HOME/
 
 RUN apk update
 RUN apk add python3
