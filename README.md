@@ -31,7 +31,7 @@
                -e MBlog_TOKEN="mblog开发者token" \
                -e Visibility="mblog发布可见权限，默认仅自己可见，可不配置" \
                -e PROXY_URL="墙内机器运行需要配置telegram代理，墙外无需配置" \
-    cooolr/mblog-telegram-bot:latest
+    accelizero/mblog-telegram-bot:latest
     ```
 
 3. 多用户模式(telegram机器人对话页面绑定token)
@@ -41,7 +41,7 @@
                --restart unless-stopped \
                -e MultiUSE="True" \
                -e PROXY_URL="墙内机器运行需要配置telegram代理，墙外无需配置" \
-    cooolr/mblog-telegram-bot:latest
+    accelizero/mblog-telegram-bot:latest
     ```
 
 ## Docker-Compose部署
